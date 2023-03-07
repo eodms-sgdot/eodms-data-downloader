@@ -44,11 +44,11 @@ For more in-depth information on the configuration file, see [Config File](https
 
 ## Command-line options
 
---url and --outdir options are mandatory
---rec will recursively download a directory
---include can be used to set an inclusion regular expression run against file names (not directories)
---threads sets the number of download threads (default is 4)
---stripdir will strip the directories before the last directory in the path in the output directory (--outdir)
+#### --url and --outdir options are mandatory
+#### --rec will recursively download a directory
+#### --include can be used to set an inclusion regular expression run against file names (not directories)
+#### --threads sets the number of download threads (default is 4)
+#### --stripdir will strip the directories before the last directory in the path in the output directory (--outdir)
 
 ```
 Usage: eodms-data-downloader [OPTIONS] --url <url> --outdir <out>
