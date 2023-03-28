@@ -497,10 +497,11 @@ fn download_file(fd: &File2Download) -> Result<(), Box<dyn Error>> {
 	let mut buffer = [0; 16384];
 	loop {
 		let n = response.read(&mut buffer[..])?;
-		copy(&mut buffer.as_ref(), &mut dest)?;
 		if n == 0 {
 			break;
 		}
+		let mut slice = &buffer[0..n];
+		copy(&mut slice, &mut dest)?;
 	}
 	let stop = SystemTime::now();
 	let delta = stop.duration_since(start)?.as_secs_f64();
