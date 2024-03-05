@@ -66,7 +66,6 @@ pub fn new_syncflag(initial_state: bool) -> (SyncFlagTx, SyncFlagRx) {
     let state = Arc::new(Mutex::new(initial_state));
     let tx = SyncFlagTx { inner: state.clone() };
     let rx = SyncFlagRx { inner: state.clone() };
-
-    return (tx, rx);
+    (tx, rx)
 }
 

@@ -40,17 +40,17 @@ use crate::queue::new_syncflag;
 
 #[derive(Debug, PartialEq)]
 enum RunMode {
-	DEV,
-	PROD,
+	Dev,
+	Prod,
 }
 
 impl FromStr for RunMode {
 	type Err = Box<dyn Error>;
 	fn from_str(input: &str) -> Result<RunMode, Self::Err> {
 		match input {
-			"DEV"    => Ok(RunMode::DEV),
-			"PROD"   => Ok(RunMode::PROD),
-			_        => Err("Invalid run mode, can only be DEV or PROD".into()),
+			"Dev"    => Ok(RunMode::Dev),
+			"Prod"   => Ok(RunMode::Prod),
+			_        => Err("Invalid run mode, can only be Dev or Prod".into()),
 		}
 	}
 }
@@ -58,9 +58,9 @@ impl FromStr for RunMode {
 struct ModeLu<'a> {
 	url: &'a str,
 }
-const URL_LUT: [&'static ModeLu;2] = [
-	&ModeLu  { url: "https://data.eodms-sgdot.nrcan-rncan.gc.ca" },
-	&ModeLu  { url: "https://data.eodms-sgdot.nrcan-rncan.gc.ca" },
+const URL_LUT: [ModeLu;2] = [
+	ModeLu  { url: "https://data.eodms-sgdot.nrcan-rncan.gc.ca" },
+	ModeLu  { url: "https://data.eodms-sgdot.nrcan-rncan.gc.ca" },
 ];
 
 type BoxResult<T> = Result<T,Box<dyn Error>>;
@@ -72,7 +72,7 @@ struct Conf {
 	stripdirs: bool,
 	num_threads: usize,
 	creds: Option<Creds>,
-	incrx: regex::Regex,
+	incrx: Option<regex::Regex>,
 	queue: WorkQueue<File2Download>,
 }
 
@@ -85,7 +85,7 @@ impl Default for Conf {
 			stripdirs: false,
 			creds: get_creds(),
 			num_threads: 4,
-			incrx:regex::Regex::new("").unwrap(),
+			incrx: None,
 			queue: WorkQueue::new(),
 		}
 	}
@@ -176,11 +176,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 	} else {
 		error!("All files did not download successfully");
 	}
-	return Ok(());
+	Ok(())
 }
 
 fn process_args() -> Result<Conf, Box<dyn Error>> {
-	let env_mode = env_var!(optional "MODE", default: "PROD");
+	let env_mode = env_var!(optional "MODE", default: "Prod");
 	let run_mode = RunMode::from_str(env_mode.as_str())? as usize;
 	let stdout = ConsoleAppender::builder()
 		.encoder(Box::new(PatternEncoder::new("{d(%Y-%m-%d %T%.3f)(utc)} [{l}] - {m}{n}")))
@@ -195,7 +195,7 @@ fn process_args() -> Result<Conf, Box<dyn Error>> {
 		.build(Root::builder().appender("stdout").build(filter))
 		.unwrap();
 	let loghandle = log4rs::init_config(config).unwrap();
-	let mode = URL_LUT[run_mode];
+	let mode = &URL_LUT[run_mode];
 	let matches = Command::new("eodms-downloader")
 		.about("Utility to download directories and files from EODMS Data Server")
 		.version("1.0.0")
@@ -276,7 +276,7 @@ fn process_args() -> Result<Conf, Box<dyn Error>> {
 	}
 	if let Some(incrx) = matches.get_one::<String>("inc") {
 		let re = Regex::new(incrx)?;
-		conf.incrx = re;
+		conf.incrx = Some(re);
 	}
 	if let Some(recursive) = matches.get_one::<bool>("rec") {
 		conf.recursive = *recursive;
@@ -456,9 +456,9 @@ fn prepare_file(conf: &Conf) -> Result<File2Download, Box<dyn Error>> {
 		creds: conf.creds.clone(),
 		download: false
 	};
-	if conf.incrx.as_str().len() > 0 {
-		debug!("Checking {} against {}",fname,conf.incrx);
-		if conf.incrx.is_match(fname.as_str()) {
+	if conf.incrx.is_some() {
+		debug!("Checking {} against {:?}",fname,conf.incrx);
+		if conf.incrx.as_ref().unwrap().is_match(fname.as_str()) {
 			debug!("Matched");
 		} else {
 			debug!("Not matched");
@@ -467,7 +467,7 @@ fn prepare_file(conf: &Conf) -> Result<File2Download, Box<dyn Error>> {
 	}
 	fd.download = true;
 	if !dirpath.exists() {
-		fs::create_dir_all(&dirpath)?;
+		fs::create_dir_all(dirpath)?;
 	}
 	Ok(fd)
 }
