@@ -299,7 +299,7 @@ dependencies = [
 
 [[package]]
 name = "eodms-data-downloader"
-version = "1.0.2"
+version = "1.0.3"
 dependencies = [
  "clap",
  "dirs",
