@@ -1,17 +1,21 @@
 [package]
 name = "eodms-data-downloader"
-version = "1.0.3"
+version = "1.0.4"
 edition = "2021"
 
 [dependencies]
-reqwest = { version = "0.11", features = ["blocking", "json"] }
+reqwest = { version = "0.13", features = ["blocking", "json"] }
 clap = "4"
 url = "2"
 log = { version = "0.4" }
-log4rs = "1.2"
-simple-error = "0.2"
+log4rs = "1.4"
+simple-error = "0.3"
 env-var = "1"
 regex = "1"
-rand = "0.8"
-dirs = "4.0"
-rust-ini = "0.18"
+rand = "0.10"
+dirs = "6.0"
+rust-ini = "0.21"
+
+[lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "deny", priority = -1 }
