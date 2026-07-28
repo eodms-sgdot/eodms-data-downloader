@@ -139,6 +139,7 @@ fn get_homedir() -> Result<PathBuf, Box<dyn Error>> {
 pub fn download_files(conf: &Conf) -> Result<(),Box<dyn Error>> {
     log::info!("Processing URL {}", conf.url);
     log::info!("Recursively: {}",conf.recursive);
+    log::info!("Number of Threads: {}",conf.num_threads);
     let (results_tx, results_rx) = channel();
     let (mut more_jobs_tx, more_jobs_rx) = new_syncflag(true);
     let mut threads = Vec::new();
