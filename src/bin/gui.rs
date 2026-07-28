@@ -3,6 +3,7 @@
 use eframe::egui;
 use egui_file_dialog::FileDialog;
 use std::path::PathBuf;
+use regex::Regex;
 use url::Url;
 
 use eodms_data_downloader::{Conf, download_files, normalize_url, URL_LUT};
@@ -24,14 +25,19 @@ fn main() -> eframe::Result {
 #[derive(Default)]
 struct MyApp {
     valid_url: bool,
+    valid_regex: bool,
     file_dialog: FileDialog,
     output_directory: Option<PathBuf>,
     conf: Conf,
+    incrx: String,
 }
 
 impl eframe::App for MyApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ui, |ui| {
+            if self.incrx.is_empty() {
+                self.valid_regex = true;
+            }
             ui.vertical_centered(|u| u.heading("EODMS Data Downloader"));
             ui.separator();
             ui.horizontal(|ui| {
@@ -62,13 +68,17 @@ impl eframe::App for MyApp {
                 self.output_directory = Some(path);
             }
             ui.separator();
-            /*
-    pub num_threads: usize,
-    pub incrx: Option<regex::Regex>,
-    */
-            ui.checkbox(&mut self.conf.recursive, "Recursive");
-            ui.separator();
-            ui.checkbox(&mut self.conf.stripdirs, "Strip Directories");
+            ui.horizontal(|ui| {
+                ui.checkbox(&mut self.conf.recursive, "Recursive");
+                ui.checkbox(&mut self.conf.stripdirs, "Strip Directories");
+                ui.label("Number of Threads: ");
+                ui.add(egui::Slider::new(&mut self.conf.num_threads, 1..=16));
+                ui.label("Include Regex: ");
+                let response = ui.add(egui::TextEdit::singleline(&mut self.incrx).desired_width(200.0));
+                if response.changed() {
+                    self.valid_regex = Regex::new(&self.incrx).is_ok();
+                }
+            });
             ui.separator();
 
             if ui.add_enabled(self.form_is_valid(), egui::Button::new("Submit")).clicked() {
@@ -76,13 +86,9 @@ impl eframe::App for MyApp {
                 if let Ok(url) = normalize_url(&self.conf.url, mode) {
                     self.conf.url = url;
                     self.conf.output_directory = self.output_directory.as_mut().unwrap().clone().into_os_string().into_string().unwrap();
-                    /*
-                    let conf = Conf {
-                        output_directory: self.output_directory.as_mut().unwrap().clone().into_os_string().into_string().unwrap(),
-                        url,
-                        ..Default::default()
-                    };
-                    */
+                    if !self.incrx.is_empty() {
+                        self.conf.incrx = Some(Regex::new(&self.incrx).unwrap());
+                    }
                     match download_files(&self.conf) {
                         Ok(()) => {},
                         Err(e) => {
@@ -98,6 +104,6 @@ impl eframe::App for MyApp {
 }
 impl MyApp {
     fn form_is_valid(&self) -> bool {
-        self.output_directory.is_some() && self.valid_url
+        self.output_directory.is_some() && self.valid_url && self.valid_regex
     }
 }
