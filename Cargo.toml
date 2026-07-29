@@ -4,7 +4,7 @@ version = "1.0.5"
 edition = "2021"
 
 [features]
-gui = ["egui","eframe","egui-file-dialog"]
+gui = ["egui","eframe","egui-file-dialog","egui_logger"]
 
 [dependencies]
 clap = "4"
@@ -12,8 +12,9 @@ dirs = "6.0"
 eframe = { version = "0.35", optional = true }
 egui = { version = "0.35", optional = true }
 egui-file-dialog = { version = "0.14", optional = true }
+egui_logger = { path = "../egui_logger", optional = true }
+#egui_logger = { version = "0.11", optional = true }
 env-var = "1"
-env_logger = "0.11.11"
 log = { version = "0.4" }
 log4rs = "1.4"
 rand = "0.10"
@@ -25,7 +26,7 @@ url = "2"
 
 [[bin]]
 name = "gui"
-required-features = ["egui", "eframe","egui-file-dialog"]
+required-features = ["egui", "eframe","egui-file-dialog","egui_logger"]
 
 [lints.clippy]
 all = { level = "deny", priority = -1 }

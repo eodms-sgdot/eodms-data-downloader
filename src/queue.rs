@@ -1,6 +1,6 @@
-use std::sync::Mutex;
 use std::collections::VecDeque;
 use std::sync::Arc;
+use std::sync::Mutex;
 
 // https://gist.github.com/NoraCodes/e6d40782b05dc8ac40faf3a0405debd3
 
@@ -17,8 +17,10 @@ impl<T: Send + Clone> Default for WorkQueue<T> {
 
 impl<T: Send + Clone> WorkQueue<T> {
     #[must_use]
-    pub fn new() -> Self { 
-        Self { inner: Arc::new(Mutex::new(VecDeque::new())) } 
+    pub fn new() -> Self {
+        Self {
+            inner: Arc::new(Mutex::new(VecDeque::new())),
+        }
     }
     /// # Panics
     ///
@@ -36,7 +38,7 @@ impl<T: Send + Clone> WorkQueue<T> {
     ///
     /// Will panic if attempting to lock a poisoned mutex
     pub fn add_work(&self, work: T) -> usize {
-        // As above, try to get a lock on the mutex. 
+        // As above, try to get a lock on the mutex.
         if let Ok(mut queue) = self.inner.lock() {
             queue.push_back(work);
             queue.len()
@@ -85,8 +87,11 @@ impl SyncFlagRx {
 #[must_use]
 pub fn new_syncflag(initial_state: bool) -> (SyncFlagTx, SyncFlagRx) {
     let state = Arc::new(Mutex::new(initial_state));
-    let tx = SyncFlagTx { inner: state.clone() };
-    let rx = SyncFlagRx { inner: state.clone() };
+    let tx = SyncFlagTx {
+        inner: state.clone(),
+    };
+    let rx = SyncFlagRx {
+        inner: state.clone(),
+    };
     (tx, rx)
 }
-

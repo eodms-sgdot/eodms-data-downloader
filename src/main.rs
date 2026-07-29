@@ -15,13 +15,13 @@ use log4rs::config::{Appender, Root};
 use log4rs::encode::pattern::PatternEncoder;
 use log4rs::Config;
 use regex::Regex;
-use std::fs;
 use std::error::Error;
+use std::fs;
 use std::path::Path;
 use std::str::FromStr;
 extern crate ini;
 
-use eodms_data_downloader::{Conf, RunMode, URL_LUT, download_files, normalize_url};
+use eodms_data_downloader::{download_files, normalize_url, Conf, RunMode, URL_LUT};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let conf = process_args()?;
@@ -172,4 +172,3 @@ fn process_args() -> Result<Conf, Box<dyn Error>> {
     }
     Ok(conf)
 }
-

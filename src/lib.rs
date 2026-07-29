@@ -1,17 +1,17 @@
-use ini::Ini;
 use crate::queue::WorkQueue;
+use ini::Ini;
 use reqwest::redirect;
-use std::error::Error;
-use std::path::{Path, PathBuf};
 use std::collections::HashMap;
-use std::sync::mpsc::channel;
-use std::sync::mpsc::Sender;
-use std::{thread, time};
+use std::error::Error;
 use std::fs;
-use std::str::FromStr;
 use std::fs::File;
 use std::io::{copy, Read};
+use std::path::{Path, PathBuf};
+use std::str::FromStr;
+use std::sync::mpsc::channel;
+use std::sync::mpsc::Sender;
 use std::time::SystemTime;
+use std::{thread, time};
 use url::Url;
 
 use crate::queue::new_syncflag;
@@ -136,10 +136,10 @@ fn get_homedir() -> Result<PathBuf, Box<dyn Error>> {
 /// # Panics
 ///
 /// TBD
-pub fn download_files(conf: &Conf) -> Result<(),Box<dyn Error>> {
+pub fn download_files(conf: &Conf) -> Result<(), Box<dyn Error>> {
     log::info!("Processing URL {}", conf.url);
-    log::info!("Recursively: {}",conf.recursive);
-    log::info!("Number of Threads: {}",conf.num_threads);
+    log::info!("Recursively: {}", conf.recursive);
+    log::info!("Number of Threads: {}", conf.num_threads);
     let (results_tx, results_rx) = channel();
     let (mut more_jobs_tx, more_jobs_rx) = new_syncflag(true);
     let mut threads = Vec::new();
@@ -287,7 +287,7 @@ fn process_directory(conf: &Conf, jobs_total: &mut u32) -> Result<(), Box<dyn Er
                     conf.queue.add_work(fd);
                     *jobs_total += 1;
                 }
-            },
+            }
             "directory" => {
                 if conf.recursive {
                     match process_directory(&new_conf, jobs_total) {
@@ -402,7 +402,7 @@ fn download_file(fd: &File2Download) -> Result<(), Box<dyn Error>> {
 /// # Errors
 ///
 /// Will return an error given an invalid url
-pub fn normalize_url(url: &str, mode: &ModeLu) -> Result<String,Box<dyn Error>> {
+pub fn normalize_url(url: &str, mode: &ModeLu) -> Result<String, Box<dyn Error>> {
     let base_url_len = mode.url.len();
     let trimmed_url = url.trim_end_matches('/');
 
