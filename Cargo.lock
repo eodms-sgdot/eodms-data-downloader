@@ -1188,6 +1188,7 @@ dependencies = [
 [[package]]
 name = "egui_logger"
 version = "0.11.0"
+source = "git+https://github.com/kdesjard/egui_logger.git?branch=add_more_controls#3524030c00390085c2ecb8d7e014d965734a90fe"
 dependencies = [
  "chrono",
  "egui",
@@ -1259,6 +1260,7 @@ dependencies = [
 name = "eodms-data-downloader"
 version = "1.0.5"
 dependencies = [
+ "arrayref",
  "clap",
  "dirs",
  "eframe",

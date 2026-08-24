@@ -7,12 +7,13 @@ edition = "2021"
 gui = ["egui","eframe","egui-file-dialog","egui_logger"]
 
 [dependencies]
+arrayref = { version = "0.3.9" } # https://thehackernews.com/2026/08/rust-supply-chain-attack-puts-build.html
 clap = "4"
 dirs = "6.0"
 eframe = { version = "0.35", optional = true }
 egui = { version = "0.35", optional = true }
 egui-file-dialog = { version = "0.14", optional = true }
-egui_logger = { path = "../egui_logger", optional = true }
+egui_logger = { git = "https://github.com/kdesjard/egui_logger.git", branch = "add_more_controls", optional = true }
 #egui_logger = { version = "0.11", optional = true }
 env-var = "1"
 log = { version = "0.4" }
